@@ -5,9 +5,11 @@ import { dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const CodeBlock = ({ children, language = "javascript" }) => {
     return (
-        <SyntaxHighlighter wrapLongLines language={language} style={dracula}>
-            {children}
-        </SyntaxHighlighter>
+        <section className="mb-2">
+            <SyntaxHighlighter wrapLongLines language={language} style={dracula}>
+                {children}
+            </SyntaxHighlighter>
+        </section>
     );
 };
 

@@ -11,6 +11,7 @@ import e5 from "./../assets/images/e5.jpg";
 import e6 from "./../assets/images/e6.jpg";
 import e7 from "./../assets/images/e7.jpg";
 import e8 from "./../assets/images/e8.jpg";
+import e9 from "./../assets/images/e9.jpg";
 
 const Javascript = () => {
     return (
@@ -600,6 +601,259 @@ console.log(c); // 100`}</CodeBlock>
 function x() {
   var a = 20;
 }`}</CodeBlock>
+                </Chapter>
+
+                <Divider />
+
+                <Chapter number={10}>
+                    <Heading link="https://youtu.be/qikxEIxsXco?si=8LWkPI2__5y4FU-y">Episode 10 : Closures in JS</Heading>
+                    <Point>
+                        Function bundled along with it's lexical scope is <Highlighted>closure</Highlighted>
+                    </Point>
+
+                    <Point>
+                        JavaScript has a lexcial scope environment. If a function needs to access a variable, it first goes to its
+                        local memory. When it does not find it there, it goes to the memory of its lexical parent. See Below code,
+                        Over here function y along with its lexical scope i.e. (function x) would be called a closure
+                    </Point>
+                    <CodeBlock>{`function x() {
+  var a = 7; // lexical env variable for y ( preserve in memory called closure )
+  function y() {
+    console.log(a);
+  }
+  return y;
+}
+var z = x();
+console.log(z); // value of z is entire code of function y.`}</CodeBlock>
+                    <Point subPoint>
+                        In above code, When y is returned, not only is the function returned but the entire closure (fun y + its
+                        lexical scope) is returned and put inside z. So when z is used somewhere else in program, it still
+                        remembers var a inside x()
+                    </Point>
+                    <Point>Another Example</Point>
+                    <CodeBlock>{`function z() {
+  var b = 900;
+  function x() {
+    var a = 7;
+    function y() {
+      console.log(a, b);
+    }
+    y();
+  }
+  x();
+}
+z(); // 7 900`}</CodeBlock>
+
+                    <Point>Thus In simple words, we can say:</Point>
+                    <Point subPoint>
+                        *A <Highlighted>closure</Highlighted> is a function that has access to its outer function scope even after
+                        the function has returned. Meaning, A closure can remember and access variables and arguments reference of
+                        its outer function even after the function has returned.*
+                    </Point>
+                    <Image src={e9} />
+
+                    <Point>
+                        <Highlighted>Advantages</Highlighted> of Closure:
+                    </Point>
+                    <Point subPoint>Module Design Pattern</Point>
+                    <Point subPoint>Currying</Point>
+                    <Point subPoint>Memoize</Point>
+                    <Point subPoint>Data hiding and encapsulation</Point>
+                    <Point subPoint>setTimeouts etc</Point>
+                    <Point>
+                        <Highlighted>Disadvantages</Highlighted> of Closure:
+                    </Point>
+                    <Point subPoint>Over consumption of memory</Point>
+                    <Point subPoint>Memory Leak</Point>
+                    <Point subPoint>Freeze browser</Point>
+                </Chapter>
+
+                <Divider />
+
+                <Chapter number={11}>
+                    <Heading link="https://youtu.be/eBTBG4nda2A?si=_Om9Tm9-gr0f5AvZ">
+                        Episode 11 : setTimeout + Closures Interview Question
+                    </Heading>
+                    <Point isParagraph>
+                        <Highlighted>Time, tide and Javascript wait for none</Highlighted>
+                    </Point>
+                    <CodeBlock>{`function x() {
+  var i = 1;
+  setTimeout(function () {
+    console.log(i);
+  }, 3000);
+  console.log("Namaste Javascript");
+}
+x();
+// Output:
+// Namaste Javascript
+// 1 // after waiting 3 seconds`}</CodeBlock>
+
+                    <Point>
+                        We expect JS to wait 3 sec, print 1 and then go down and print the string. But JS prints string
+                        immediately, waits 3 sec and then prints 1
+                    </Point>
+                    <Point>
+                        The function inside setTimeout forms a closure (remembers reference to i ). So wherever function goes it
+                        carries this ref along with it
+                    </Point>
+                    <Point>
+                        setTimeout takes this callback function & attaches timer of 3000ms and stores it. Goes to next line
+                        without waiting and prints string
+                    </Point>
+                    <Point>After 3000ms runs out, JS takes function, puts it into call stack and runs it</Point>
+                    <Point>
+                        <Highlighted>Q</Highlighted>: Print 1 after 1 sec, 2 after 2 sec till 5 : Tricky interview question
+                    </Point>
+                    <Point>We assume this has a simple approach as below</Point>
+                    <CodeBlock>{`function x() {
+  for (var i = 1; i <= 5; i++) {
+    setTimeout(function () {
+      console.log(i);
+    }, i * 1000);
+  }
+  console.log("Namaste Javascript");
+}
+x();
+// Output:
+// Namaste Javascript
+// 6
+// 6
+// 6
+// 6
+// 6`}</CodeBlock>
+                    <Point>Reason?</Point>
+                    <Point subPoint>
+                        **This happens <Highlighted>because of closures</Highlighted>. When setTimeout stores the function
+                        somewhere and attaches timer to it, the <Highlighted>function remembers its reference</Highlighted> to i,
+                        not value of i. All 5 copies of function point to same reference of i. JS stores these 5 functions, prints
+                        string and then comes back to the functions. By then the timer has run fully. And due to looping, the i
+                        value became 6. And when the callback fun runs the variable i = 6. So same 6 is printed in each log
+                    </Point>
+                    <Point subPoint>
+                        <Highlighted>To avoid this, we can use let instead of var</Highlighted> as let has Block scope. For each
+                        iteration, the i is a new variable altogether( new copy of i ). Everytime setTimeout is run, the inside
+                        function forms closure with new variable i ( simply let create new copy of i for each iteration and form a
+                        new closure for each iteration )
+                    </Point>
+                    <Point>But what if interviewer ask us to implement using var?</Point>
+                    <CodeBlock>{`function x() {
+  for (var i = 1; i <= 5; i++) {
+    function close(i) {
+      setTimeout(function () {
+        console.log(i);
+      }, i * 1000);
+      // put the setT function inside new function close()
+    }
+    close(i); // everytime you call close(i) it creates new copy of i. Only this time, it is with var itself!
+  }
+  console.log("Namaste Javascript");
+}
+x();`}</CodeBlock>
+                </Chapter>
+
+                <Divider />
+
+                <Chapter number={13}>
+                    <Heading link="https://youtu.be/SHINoHxvTso?si=EpLt0WcuSNVATYrg">
+                        Episode 13 : First Class Functions ft. Anonymous Functions
+                    </Heading>
+
+                    <Point>
+                        <Highlighted>Q</Highlighted>: What is <Highlighted>Function statement / Function Declaration</Highlighted>
+                        ?
+                    </Point>
+                    <Point subPoint>Below way of creating function are function statement</Point>
+                    <CodeBlock>{`function a() {
+  console.log("Hello");
+}
+a(); // Hello`}</CodeBlock>
+
+                    <Point>
+                        <Highlighted>Q</Highlighted>: What is <Highlighted>Function Expression</Highlighted>?
+                    </Point>
+                    <Point subPoint>Assigning a function to a variable. Function acts like a value</Point>
+                    <CodeBlock>{`var b = function () {
+  console.log("Hello");
+};
+b();`}</CodeBlock>
+
+                    <Point>
+                        <Highlighted>Q</Highlighted>: <Highlighted>Difference</Highlighted> between function statement and
+                        expression
+                    </Point>
+                    <Point subPoint>
+                        The major difference between these two lies in <Highlighted>Hoisting</Highlighted>
+                    </Point>
+
+                    <CodeBlock>{`a(); // "Hello A"
+b(); // TypeError
+function a() {
+  console.log("Hello A");
+}
+var b = function () {
+  console.log("Hello B");
+};
+// Why? During mem creation phase a is created in memory and function assigned to a. But b is created like a variable (b:undefined) and until code reaches the function()  part, it is still undefined. So it cannot be called.`}</CodeBlock>
+
+                    <Point>
+                        <Highlighted>Q</Highlighted>: What is <Highlighted>Anonymous Function</Highlighted>?
+                    </Point>
+                    <Point subPoint>A function without a name</Point>
+                    <CodeBlock>{`function () {
+
+}// this is going to throw Syntax Error - Function Statement requires function name , it need to be pass somewhere as value`}</CodeBlock>
+                    <Point subPoint>
+                        Anonymous functions are used when functions are used as values eg. the code sample for function expression
+                        above
+                    </Point>
+
+                    <Point>
+                        <Highlighted>Q</Highlighted>: What is <Highlighted>Named Function Expression</Highlighted>?
+                    </Point>
+                    <Point subPoint>Same as Function Expression but function has a name instead of being anonymous</Point>
+                    <CodeBlock>{`var b = function xyz() {
+  console.log("b called");
+};
+b(); // "b called"
+xyz(); // Throws ReferenceError:xyz is not defined.
+// xyz function is not created in global scope. So it can't be called.`}</CodeBlock>
+
+                    <Point>
+                        <Highlighted>Q</Highlighted>: Parameters vs Arguments?
+                    </Point>
+
+                    <CodeBlock>{`var b = function (param1, param2) {
+  // labels/identifiers are parameters
+  console.log("b called");
+};
+b(arg1, arg2); // arguments - values passed inside function call`}</CodeBlock>
+
+                    <Point>
+                        <Highlighted>Q</Highlighted>: What is <Highlighted>First Class Function</Highlighted> aka First Class
+                        Citizens?
+                    </Point>
+                    <Point subPoint>
+                        We can pass functions inside a function as arguments and /or return a function(HOF). These ability are
+                        altogether known as First class function. It is programming concept available in some other languages too
+                    </Point>
+                    <CodeBlock>{`var b = function (param1) {
+  console.log(param1); // prints " f() {} "
+};
+b(function () {});
+
+// Other way of doing the same thing:
+var b = function (param1) {
+  console.log(param1);
+};
+function xyz() {}
+b(xyz); // same thing as prev code
+
+// we can return a function from a function:
+var b = function (param1) {
+  return function () {};
+};
+console.log(b()); //we log the entire fun within b.`}</CodeBlock>
                 </Chapter>
             </section>
         </div>
